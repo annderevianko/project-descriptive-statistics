@@ -16,11 +16,12 @@ df <- df %>% slice(-1) %>% select(-alternative.name, -interesting.story, -X,
   mutate(across(where(is.character), str_squish)) %>%
   separate_rows(sector, sep = ",\\s*") %>%
   mutate(sector = str_to_lower(sector) %>%
-           str_replace("^financial$", "finance"))
+           str_replace("^financial$", "finance")) %>%
+  mutate(records.lost = as.numeric(str_remove_all(records.lost, ",")))
   
 
 
-df$sector %>% unique()
+df$sector %>%df$sector %>%df$sector %>% unique()
 df$method %>% unique()
 df %>% group_by(organisation) %>% summarize(n = n()) %>%
                   arrange(desc(n))
@@ -34,7 +35,9 @@ df %>% group_by(organisation) %>% summarize(n = n()) %>%
 
 # 4. Most common breach methods (horizontal bars):
 
-# 5. Top 10 largest breaches by organization (horizontal bars):
+# 5.Top 10 organizations by total records lost (horizontal bars):
+
+
 
 # 6. Breach method by sector (heatmap):
   
