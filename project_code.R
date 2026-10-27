@@ -20,12 +20,11 @@ df <- df %>% slice(-1) %>% select(-alternative.name, -interesting.story, -X,
   mutate(records.lost = as.numeric(str_remove_all(records.lost, ",")))
   
 
-
+class(df$records.lost)
 df$sector %>%df$sector %>%df$sector %>% unique()
 df$method %>% unique()
 df %>% group_by(organisation) %>% summarize(n = n()) %>%
                   arrange(desc(n))
-
 
 # 1. Typical vs record-breaking breach size (histogram, log scale):
 
@@ -37,11 +36,42 @@ df %>% group_by(organisation) %>% summarize(n = n()) %>%
 
 # 5.Top 10 organizations by total records lost (horizontal bars):
 
+avg_sum <- df %>%
+  distinct(organisation, year, records.lost, .keep_all = TRUE) %>% 
+  group_by(organisation) %>% 
+  summarize(rec.l_sum = sum(records.lost)) %>%
+  summarize(avg = mean(rec.l_sum)) %>%
+  pull(avg)
 
 
+graph_5 <- df %>%
+  distinct(organisation, year, records.lost, .keep_all = TRUE) %>%
+  group_by(organisation) %>% 
+  summarize(rec.l_sum = sum(records.lost), n = n()) %>% 
+  arrange(desc(rec.l_sum)) %>% 
+  head(10) %>%
+  ggplot(aes(x = rec.l_sum, y = fct_reorder(organisation, rec.l_sum))) +
+  geom_col(fill = "#90b1cf") +
+  geom_text(aes(label = paste0(round(rec.l_sum / 1000000), "M")), hjust = -0.1, size = 3) +
+  geom_vline(xintercept = avg_sum, linetype = "dashed", color = "#395176", linewidth = 0.5) +
+  scale_x_continuous(labels = function(x) paste0(x / 1000000, "M"),
+                     expand = expansion(mult = c(0, 0.15))) +
+  labs(title = "Top 10 companies by total records lost",
+       x = "Total records lost",
+       y = NULL,
+      subtitle = paste0("Dashed line: average of ", round(avg_sum / 1000000, 1),
+                        "M records per company")) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0, size = 17, margin = margin(b = 4)),
+        plot.subtitle = element_text(hjust = 0, size = 11, margin = margin(b = 6)),
+        axis.title.x = element_text(margin = margin(t = 10)),
+        plot.title.position = "panel")
+
+graph_5
+  
 # 6. Breach method by sector (heatmap):
   
-df %>%
+graph_6 <- df %>%
   filter(method != "unknown") %>%
   mutate(sector = fct_rev(fct_infreq(sector)),   
                method = fct_infreq(method)) %>%  
@@ -66,7 +96,8 @@ df %>%
     plot.title = element_text(size = 17, margin = margin(b = 10), hjust = 0.5),
     axis.title = element_text(size = 12),
     axis.title.x = element_text(margin = margin(t = 15))
-  ) +
-  theme(plot.margin = margin(t = 15, r = 15, b = 15, l = 15))
+  )
 
+graph_6
 
+# Final graph:
