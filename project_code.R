@@ -21,7 +21,7 @@ df <- df %>% slice(-1) %>% select(-alternative.name, -interesting.story, -X,
   
 
 class(df$records.lost)
-df$sector %>%df$sector %>%df$sector %>% unique()
+df$sector %>% unique()
 df$method %>% unique()
 df %>% group_by(organisation) %>% summarize(n = n()) %>%
                   arrange(desc(n))
@@ -68,7 +68,14 @@ graph_5 <- df %>%
         plot.title.position = "panel")
 
 graph_5
-  
+
+ggsave("graph_5.png", plot = graph_5, width = 10, height = 6, dpi = 300) 
+
+# For this graph AI was used to help explain how to adjust and move text farther
+# from the graph for it to look nicer. Also AI was used to help label each row in the
+# graph with 700M, 412M and so on. The same approach of labeling where used to normaly
+# label x axis, so i would look nicer.
+
 # 6. Breach method by sector (heatmap):
   
 graph_6 <- df %>%
@@ -99,5 +106,11 @@ graph_6 <- df %>%
   )
 
 graph_6
+
+ggsave("graph_6.png", plot = graph_6, width = 10, height = 6, dpi = 300) 
+
+# For this graph AI was used to fill empty sells of the heat map with 0. Also
+# AI recommended this function -> transform = "sqrt", for the heat map to look
+# more readable in case of colors.
 
 # Final graph:
