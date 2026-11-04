@@ -32,6 +32,35 @@ df %>% group_by(organisation) %>% summarize(n = n()) %>%
 
 # 3. Records lost by sector (boxplot, log scale):
 
+df %>%
+  group_by(sector) %>%
+  summarize(median = median(records.lost, na.rm = TRUE), n = n()) %>%
+  arrange(desc(median))
+
+graph_3 <- df %>%
+  filter(!is.na(records.lost), records.lost > 0) %>%   # log scale cannot show 0
+  ggplot(aes(x = records.lost, y = fct_reorder(sector, records.lost, .fun = median))) +
+  geom_boxplot(fill = "#bdb0ca", color = "#9295b7", outlier.color = "#395176") +
+  scale_x_log10(labels = function(x) ifelse(x >= 1000000,
+                                            paste0(x / 1000000, "M"),
+                                            paste0(x / 1000, "K"))) +
+  labs(title = "Records lost per breach by sector",
+       subtitle = "Sectors ordered by median breach size, log scale",
+       x = "Records lost (log scale)",
+       y = NULL) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0, size = 17, margin = margin(b = 4)),
+        plot.subtitle = element_text(hjust = 0, size = 11, margin = margin(b = 6)),
+        axis.title.x = element_text(margin = margin(t = 10)),
+        plot.title.position = "panel")
+
+graph_3
+
+ggsave("graph_3.png", plot = graph_3, width = 10, height = 6, dpi = 300)
+
+# For this graph, AI was used to assist in the construction of the graph, namely in explaining
+# the structure, correcting errors, and making the graph look good.
+
 # 4. Most common breach methods (horizontal bars):
 
 # 5.Top 10 organizations by total records lost (horizontal bars):
