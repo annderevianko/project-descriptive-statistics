@@ -60,6 +60,17 @@ year_summary <- df %>%
 View(year_summary)
 
 
+median_by_year <- df %>%
+  distinct(ID, .keep_all = TRUE) %>%
+  group_by(year) %>%
+  summarise(
+    median_records = median(records.lost, na.rm = TRUE)
+  ) %>%
+  arrange(year)
+
+View(median_by_year)
+
+
 graph_2a <- year_summary %>%
   ggplot(aes(x = year, y = breaches)) +
   geom_line(color = "#90b1cf", linewidth = 1.1) +
