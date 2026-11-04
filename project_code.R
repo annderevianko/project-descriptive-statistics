@@ -9,7 +9,7 @@ df$method %>% unique()
 
 df <- df %>% slice(-1) %>% select(-alternative.name, -interesting.story, -X,
                                   -displayed.records, -X2nd.source.link, -story,
-                                  -ID, -X1st.source.link) %>%
+                                  -X1st.source.link) %>%
   arrange(year, desc(date)) %>% 
   mutate(method = na_if(method, "oops!")) %>%
   mutate(method = replace_na(method, "unknown")) %>%
@@ -45,6 +45,55 @@ graph_1
 #used 
 
 # 2. Breaches and total records by year (line charts):
+
+year_summary <- df %>%
+  distinct(ID, .keep_all = TRUE) %>%
+  mutate(year = as.integer(year)) %>%
+  filter(!is.na(year)) %>%
+  group_by(year) %>%
+  summarise(
+    breaches = n(),
+    total_records = sum(records.lost, na.rm = TRUE)
+  ) %>%
+  arrange(year)
+
+View(year_summary)
+
+
+graph_2a <- year_summary %>%
+  ggplot(aes(x = year, y = breaches)) +
+  geom_line(color = "#90b1cf", linewidth = 1.1) +
+  geom_point(color = "#395176", size = 2.5) +
+  labs(
+    title = "Number of Data Breaches by Year",
+    x = "Year",
+    y = "Number of breaches"
+  ) +
+  theme_minimal()
+
+graph_2a
+
+ggsave("graph_2a.png", plot = graph_2a,
+       width = 10, height = 6, dpi = 300)
+
+
+graph_2b <- year_summary %>%
+  mutate(total_records_billion = total_records / 1000000000) %>%
+  ggplot(aes(x = year, y = total_records_billion)) +
+  geom_line(color = "#9295b7", linewidth = 1.1) +
+  geom_point(color = "#395176", size = 2.5) +
+  labs(
+    title = "Total Records Lost by Year",
+    x = "Year",
+    y = "Records lost (billions)"
+  ) +
+  theme_minimal()
+
+graph_2b
+
+ggsave("graph_2b.png", plot = graph_2b,
+       width = 10, height = 6, dpi = 300)
+
 
 # 3. Records lost by sector (boxplot, log scale):
 
