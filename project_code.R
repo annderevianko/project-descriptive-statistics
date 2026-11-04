@@ -27,6 +27,22 @@ df %>% group_by(organisation) %>% summarize(n = n()) %>%
                   arrange(desc(n))
 
 # 1. Typical vs record-breaking breach size (histogram, log scale):
+graph_1 <- df %>%
+  filter(records.lost > 0) %>%
+  mutate(log_records = log10(records.lost)) %>%
+  ggplot(aes(x=log_records)) +
+  geom_histogram(binwidth = 0.25, colour = 'white', fill = "#90b1cf") + 
+  labs(
+    title = 'Typical vs record-breaking breach size',
+    subtitle = 'Distribution of lost records (log scale)',
+    x = 'Number of lost records (log10)',
+    y = 'Number of incidents (frequency)'
+  ) +
+  theme_minimal() 
+
+graph_1
+
+#used 
 
 # 2. Breaches and total records by year (line charts):
 
