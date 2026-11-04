@@ -3,7 +3,7 @@ library(dplyr)
 
 df <- read.csv("project.csv")
 
-sum(is.na(df$records))
+sum(is.na(df$records.lost))
 colnames(df)
 df$method %>% unique()
 
@@ -27,22 +27,33 @@ df %>% group_by(organisation) %>% summarize(n = n()) %>%
                   arrange(desc(n))
 
 # 1. Typical vs record-breaking breach size (histogram, log scale):
-graph_1 <- df %>%
-  filter(records.lost > 0) %>%
-  mutate(log_records = log10(records.lost)) %>%
-  ggplot(aes(x=log_records)) +
-  geom_histogram(binwidth = 0.25, colour = 'white', fill = "#90b1cf") + 
+task1 <-df %>%
+  distinct(organisation, year, records.lost) %>%
+  filter(records.lost > 0) 
+
+meadian <- median(task1$records.lost)
+
+graph_1 <-
+  ggplot(task1, aes(x=records.lost)) +
+  geom_histogram(binwidth = 0.25, colour = 'white', fill = "#90b1cf") +
+  geom_vline(xintercept = meadian, linetype = 'dashed', color = '#395176' ) +
+  scale_x_log10(
+    breaks = c(1e3, 1e4,1e5,1e6,1e7,1e8,1e9),
+    labels = c('1K', '10K', '100K', '1M', '10M', '100M', '1B')
+  ) +
   labs(
     title = 'Typical vs record-breaking breach size',
-    subtitle = 'Distribution of lost records (log scale)',
-    x = 'Number of lost records (log10)',
-    y = 'Number of incidents (frequency)'
+    subtitle = paste('Distribution of lost records (log scale). Median is dashed line and = ', round(meadian, 1)),
+    x = 'Number of lost records (log scale)',
+    y = 'Number of incidents'
   ) +
   theme_minimal() 
 
 graph_1
+ggsave('graph_1.png', plot = graph_1, width = 10, height = 6, dpi = 300) 
 
-#used 
+#AI suggested axis labels, helped fix errors, proposed adding the median 
+#and recommended using scale_x_log10() with quality labels
 
 # 2. Breaches and total records by year (line charts):
 
@@ -237,3 +248,39 @@ ggsave("graph_6.png", plot = graph_6, width = 10, height = 6, dpi = 300)
 # more readable in case of colors.
 
 # Final graph:
+task_finale <- df %>%
+  distinct(organisation, year, records.lost, method) %>%
+  filter(records.lost > 0, method != 'unknown')
+
+graph_finale <- 
+  ggplot(task_finale, aes(x=year, y= records.lost, colour = method)) +
+  geom_point(size=2, alpha = 0.7) +
+  facet_wrap(~method, axes = 'all_x') +
+  scale_y_log10(
+    breaks = c(1e3, 1e4,1e5,1e6,1e7,1e8,1e9),
+    labels = c('1K', '10K', '100K', '1M', '10M', '100M', '1B')
+  ) +
+  scale_colour_manual(values= c('#bdb0ca', '#90b1cf', '#9295b7', '#395176')) +
+  labs(
+    title = 'Breach size over time by hacking methods',
+    subtitle = 'One point is one incident',
+    x='Year',
+    y= 'Number of lost records(log scale)'
+  )+
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 9),
+    legend.title = element_text(size = 10),
+    axis.title = element_text(size = 12),
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = 'bold'),
+    strip.text = element_text(face = 'bold', size = 12))
+
+
+graph_finale
+ggsave('graph_finale.png', plot = graph_finale, width = 10, height = 6, dpi = 300) 
+
+#AI helped fix errors, explained facet_wrap(~method, axes = 'all_x') for 
+#splitting the plot into separate panels for each method, assisted with theme() 
+#and with color palette (scale_colour_manual()) and suggested axis labels
