@@ -79,6 +79,35 @@ ggsave("graph_3.png", plot = graph_3, width = 10, height = 6, dpi = 300)
 
 # 4. Most common breach methods (horizontal bars):
 
+graph_4 <- df %>%
+  filter(method != "unknown") %>%
+  distinct(organisation, year, records.lost, .keep_all = TRUE) %>%  # one row per breach
+  count(method) %>%
+  ggplot(aes(x = n, y = fct_reorder(method, n), fill = method)) +
+  geom_col() +
+  geom_text(aes(label = n), hjust = -0.2, size = 4) +
+  scale_fill_manual(values = c("hacked" = "#395176",
+                               "poor security" = "#9295b7",
+                               "lost device" = "#90b1cf",
+                               "inside job" = "#bdb0ca")) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
+  labs(title = "Most common breach methods",
+       x = "Number of breaches",
+       y = NULL) +
+  theme_minimal() +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0, size = 17, margin = margin(b = 8)),
+        axis.title.x = element_text(margin = margin(t = 10)),
+        plot.title.position = "panel")
+
+graph_4
+
+ggsave("graph_4.png", plot = graph_4, width = 10, height = 6, dpi = 300)
+
+# For this graph, AI was used to structure and explain the code diagram,
+# fix errors, and display the graph bars in different colors to make it
+# look nicer and clearer.
+
 # 5.Top 10 organizations by total records lost (horizontal bars):
 
 avg_sum <- df %>%
