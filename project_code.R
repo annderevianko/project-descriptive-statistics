@@ -54,6 +54,7 @@ ggsave('graph_1.png', plot = graph_1, width = 10, height = 6, dpi = 300)
 
 #AI suggested axis labels, helped fix errors, proposed adding the median 
 #and recommended using scale_x_log10() with quality labels
+#This code is used for graph that will appear on slide 4
 
 # 2. Breaches and total records by year (line charts):
 
@@ -116,6 +117,8 @@ graph_2b
 ggsave("graph_2b.png", plot = graph_2b,
        width = 10, height = 6, dpi = 300)
 
+#This code is used for graphs that will appear on slide 5
+
 
 # 3. Records lost by sector (boxplot, log scale):
 
@@ -147,7 +150,7 @@ ggsave("graph_3.png", plot = graph_3, width = 10, height = 6, dpi = 300)
 
 # For this graph, AI was used to assist in the construction of the graph, namely in explaining
 # the structure, correcting errors, and making the graph look good.
-
+#This code is used for graph that will appear on slide 6
 # 4. Most common breach methods (horizontal bars):
 
 graph_4 <- df %>%
@@ -178,6 +181,7 @@ ggsave("graph_4.png", plot = graph_4, width = 10, height = 6, dpi = 300)
 # For this graph, AI was used to structure and explain the code diagram,
 # fix errors, and display the graph bars in different colors to make it
 # look nicer and clearer.
+#This code is used for graph that will appear on slide 7
 
 # 5.Top 10 organizations by total records lost (horizontal bars):
 
@@ -220,6 +224,7 @@ ggsave("graph_5.png", plot = graph_5, width = 10, height = 6, dpi = 300)
 # from the graph for it to look nicer. Also AI was used to help label each row in the
 # graph with 700M, 412M and so on. The same approach of labeling where used to normaly
 # label x axis, so i would look nicer.
+#This code is used for graph that will appear on slide 8
 
 # 6. Breach method by sector (heatmap):
   
@@ -257,6 +262,7 @@ ggsave("graph_6.png", plot = graph_6, width = 10, height = 6, dpi = 300)
 # For this graph AI was used to fill empty sells of the heat map with 0. Also
 # AI recommended this function -> transform = "sqrt", for the heat map to look
 # more readable in case of colors.
+#This code is used for graph that will appear on slide 9
 
 # Final graph:
 task_finale <- df %>%
@@ -295,3 +301,4 @@ ggsave('graph_finale.png', plot = graph_finale, width = 10, height = 6, dpi = 30
 #AI helped fix errors, explained facet_wrap(~method, axes = 'all_x') for 
 #splitting the plot into separate panels for each method, assisted with theme() 
 #and with color palette (scale_colour_manual()) and suggested axis labels
+#This code is used for graph that will appear on slide 10
